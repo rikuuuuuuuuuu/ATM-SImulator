@@ -5,7 +5,7 @@ from datetime import datetime
 # To store transactions as a list of dictionaries
 transactions = []
 
-# Sample for adding deposit, withdrawal, and expense transactions to the history
+#  Adding deposit, withdrawal, and expense transactions to the history
 def add_transaction(transaction_type, amount, category=None):
     transaction = {
         'type': transaction_type,
@@ -26,7 +26,7 @@ def view_transaction_history():
         print(f"{transaction['date']} - {transaction['type']} - ₱{transaction['amount']:.2f} - Category: {transaction['category'] if transaction['category'] else 'N/A'}")
     print("-----------------------------")
 
-# Example function for printing a receipt
+# Function for printing a receipt
 def print_receipt(transaction_type, amount, balance, category=None):
     print("\n------ Receipt ------")
     print(f"Transaction Type: {transaction_type}")
