@@ -1,66 +1,134 @@
-import datetime
+# Existing Data
+budgetcategories = []
+budgetlimits = []
+expenses = []
+transactions = []  # This will store the transaction history
 
-class ATM:
-    def __init__(self):
-        # Initialize an empty list to store transaction history
-        self.transaction_history = []
+USER_FILE = 'users.txt'
 
-    def record_transaction(self, transaction_type, amount, balance):
-        """
-        Record a transaction in the transaction history.
+def register():
+    username = input("Enter username: ")
+    password = input("Enter password: ")
+    with open(USER_FILE, 'a') as f:
+        f.write(f"{username},{password}\n")
+    print("Registration successful!")
 
-        Args:
-            transaction_type (str): Type of the transaction (e.g., 'Deposit', 'Withdrawal').
-            amount (float): Amount involved in the transaction.
-            balance (float): Balance after the transaction.
-        """
-        timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        transaction = {
-            "timestamp": timestamp,
-            "type": transaction_type,
-            "amount": amount,
-            "balance": balance
-        }
-        self.transaction_history.append(transaction)
+def login():
+    username = input("Enter username: ")
+    password = input("Enter password: ")
+    with open(USER_FILE, 'r') as f:
+        for line in f:
+            stored_username, stored_password = line.strip().split(',')
+            if stored_username == username and stored_password == password:
+                print("Login successful!")
+                return True
+    print("Invalid username or password.")
+    return False
 
-    def display_transaction_history(self):
-        """
-        Display the transaction history in a readable format.
-        """
-        print("\nTransaction History:")
-        if not self.transaction_history:
-            print("No transactions available.")
-            return
+def set_budget():
+    category = input("Enter budget category: ")
+    
+    while True:
+        try:
+            limit = float(input(f"Enter budget limit for {category}: "))
+            budgetcategories.append(category)
+            budgetlimits.append(limit)
+            break
+        except ValueError:
+            print("Please enter a valid number for the budget limit.")
 
-        for i, transaction in enumerate(self.transaction_history, start=1):
-            print(f"{i}. [{transaction['timestamp']}] {transaction['type']}: {transaction['amount']:.2f} | Balance: {transaction['balance']:.2f}")
+def add_expense():
+    # Check if a budget is set
+    if not budgetcategories:
+        print("Please set a budget first!")
+        return
+    
+    print("\nAvailable Budget Categories:")
+    for i, category in enumerate(budgetcategories):
+        print(f"{i + 1}. {category}")
+    
+    # Select category
+    category_index = int(input("Select category number: ")) - 1
+    category = budgetcategories[category_index]
+    
+    # Input expense amount
+    expense_amount = float(input(f"Enter expense amount for {category}: "))
+    
+    # Store the expense
+    expenses.append({
+        'category': category,
+        'amount': expense_amount
+    })
+    
+    # Add the transaction to history
+    transaction = {
+        'type': 'Expense',
+        'category': category,
+        'amount': expense_amount
+    }
+    transactions.append(transaction)
+    print(f"₱{expense_amount:.2f} has been added to {category}.")
 
-    def print_receipt(self):
-        """
-        Print the receipt for the most recent transaction.
-        """
-        if not self.transaction_history:
-            print("No transactions available for receipt printing.")
-            return
+def add_transaction(transaction_type, category, amount):
+    transaction = {
+        'type': transaction_type,
+        'category': category,
+        'amount': amount
+    }
+    transactions.append(transaction)
 
-        last_transaction = self.transaction_history[-1]
-        print("\nReceipt:")
-        print("--------------------------------")
-        print(f"Date: {last_transaction['timestamp']}")
-        print(f"Transaction Type: {last_transaction['type']}")
-        print(f"Amount: {last_transaction['amount']:.2f}")
-        print(f"Remaining Balance: {last_transaction['balance']:.2f}")
-        print("--------------------------------")
+def print_receipt(transaction):
+    print("\n------ ATM Receipt ------")
+    print(f"Transaction Type: {transaction['type']}")
+    print(f"Category: {transaction['category']}")
+    print(f"Amount: ₱{transaction['amount']:.2f}")
+    print("-------------------------")
+    print("Thank you for using our ATM!")
 
-# Example Usage
-atm = ATM()
+def print_transaction_history():
+    if not transactions:
+        print("No transactions to display.")
+        return
+    
+    print("\n------ Transaction History ------")
+    for i, transaction in enumerate(transactions, start=1):
+        print(f"Transaction {i}: {transaction['type']} - Category: {transaction['category']} - ₱{transaction['amount']:.2f}")
+    print("---------------------------------")
 
-# Simulate some transactions
-atm.record_transaction("Deposit", 500.00, 1500.00)
-atm.record_transaction("Withdrawal", 200.00, 1300.00)
+# Main program
+def main():
+    if not login():
+        return
+    
+    while True:
+        print("\n1. Set Budget")
+        print("2. Add Expense")
+        print("3. Print Transaction History")
+        print("4. Print Receipt")
+        print("5. Exit")
+        
+        choice = input("Enter number of your choice: ")
+        
+        if choice == '1':
+            set_budget()
+        elif choice == '2':
+            add_expense()
+        elif choice == '3':
+            print_transaction_history()
+        elif choice == '4':
+            if transactions:
+                print_receipt(transactions[-1])  # Print the latest transaction
+            else:
+                print("No transaction to print receipt for.")
+        elif choice == '5':
+            print("Thank you for using the ATM Simulator!")
+            break
+        else:
+            print("Invalid choice. Please try again.")
 
-# Display transaction history
-atm.display_transaction_history()
+if __name__ == "__main__":
+    main()
+
 
 # Print receipt for the last transaction
 atm.print_receipt()
