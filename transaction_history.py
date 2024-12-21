@@ -1,4 +1,3 @@
-# This constant likely represents the name of a file intended for storing user-related data, although it is not used in this snippet.
 USER_FILE = 'users.txt'
 
 from datetime import datetime
