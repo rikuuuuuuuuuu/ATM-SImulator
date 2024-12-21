@@ -1,5 +1,6 @@
 USER_FILE = 'users.txt'
 
+# Imports the datetime module to access the current date and time for transaction logging.
 from datetime import datetime
 
 # To store transactions as a list of dictionaries
